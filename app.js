@@ -158,6 +158,11 @@ rack.addEventListener("change", () => {
 
 function loadEquipos() {
 
+  if (!sitio.value || !sala.value || !fila.value || !rack.value) {
+    resetResultados();
+    return;
+  }
+
   const filtered = Tablas_Datos.filter(x =>
     x.SITIO === sitio.value &&
     x.SALA === sala.value &&
