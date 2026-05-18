@@ -16,7 +16,19 @@ const Cat_RACK = [
 ];
 
 // ✅ LOCAL STORAGE
-let Tablas_Datos = JSON.parse(localStorage.getItem("inventario")) || [];
+let dataInicial = [
+  {
+    SITIO: "MTY",
+    SALA: "DC1",
+    FILA: "F1",
+    RACK: "R01",
+    PRODUCT_NAME: "C9300",
+    SERIAL_NUMBER: "SN001",
+    STATUS: "Active"
+  }
+];
+
+let Tablas_Datos = JSON.parse(localStorage.getItem("inventario")) || dataInicial;
 
 // ================= ELEMENTOS =================
 
