@@ -84,12 +84,21 @@ function loadSitios() {
 
 // ================= FILTROS =================
 
-sitio.addEventListener("change", () => {
+function resetResultados() {
+  document.getElementById("count").innerText = 0;
+  document.getElementById("results").innerHTML = "";
+}
 
+sitio.addEventListener("change", () => {
+  
+  resetResultados(); // ✅ limpiar resultados
+  
   sala.innerHTML = "<option value=''>Seleccione</option>";
   fila.innerHTML = "<option value=''>Seleccione</option>";
   rack.innerHTML = "<option value=''>Seleccione</option>";
 
+  if (!sitio.value) return;
+  
   const filtered = Cat_SALA.filter(x => x.SITIO === sitio.value);
 
   filtered.forEach(x => {
@@ -100,11 +109,13 @@ sitio.addEventListener("change", () => {
 
 sala.addEventListener("change", () => {
 
-  if (!sala.value) return;
-  
+  resetResultados(); // ✅ limpiar
+
   fila.innerHTML = "<option value=''>Seleccione</option>";
   rack.innerHTML = "<option value=''>Seleccione</option>";
 
+  if (!sala.value) return;
+  
   const filtered = Cat_FILA.filter(
     x => x.SITIO === sitio.value && x.SALA === sala.value
   );
@@ -117,8 +128,12 @@ sala.addEventListener("change", () => {
 
 fila.addEventListener("change", () => {
 
+  resetResultados(); // ✅ limpiar
+
   rack.innerHTML = "<option value=''>Seleccione</option>";
 
+  if (!fila.value) return;
+  
   const filtered = Cat_RACK.filter(
     x => x.SALA === sala.value && x.FILA === fila.value
   );
@@ -129,7 +144,15 @@ fila.addEventListener("change", () => {
 
 });
 
-rack.addEventListener("change", loadEquipos);
+rack.addEventListener("change", () => {
+
+  if (!rack.value) {
+    resetResultados();
+    return;
+  }
+
+  loadEquipos(); // ✅ solo carga cuando ya hay selección final válida
+});
 
 // ================= GALLERY =================
 
