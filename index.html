@@ -2,22 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<!-- SDK TELEGRAM -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <title>Inventario</title>
 
 <style>
 
-/* ===== GENERAL ===== */
+/* GENERAL */
 body {
   font-family: 'Segoe UI', Arial;
   background: #f4f4f4;
   margin: 0;
-  padding: 0;
 }
 
-/* CONTENEDOR TIPO MOVIL */
 .app {
   max-width: 420px;
   margin: auto;
@@ -26,62 +22,40 @@ body {
   padding: 20px;
 }
 
-/* TITULOS */
-h2 {
-  margin-bottom: 20px;
-}
+h2 { margin-bottom: 20px; }
+.titulo { text-align: center; }
 
-/* LABELS */
 label {
   display: block;
   margin-top: 10px;
   font-size: 14px;
-  color: #555;
 }
 
-/* SELECT */
-select {
+select, input {
   width: 100%;
-  height: 45px;
+  height: 40px;
   margin-top: 5px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  padding: 5px;
 }
 
-/* CARDS */
-.card {
-  background: #f8f8f8;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* TEXTO CARD */
-.card-title {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.card-row {
-  font-size: 13px;
-  color: #555;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* BOTON */
+/* BOTONES */
 .btn {
   width: 100%;
-  background: linear-gradient(90deg, #2f6edb, #4c8dff);
+  background: #2f6edb;
   color: white;
-  border: none;
-  padding: 15px;
+  padding: 12px;
   margin-top: 15px;
   border-radius: 10px;
-  font-size: 16px;
+  border: none;
+}
+
+/* CARD */
+.card {
+  background: #f8f8f8;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
@@ -92,90 +66,56 @@ select {
   align-items: center;
 }
 
-/* ICONOS */
-.icon-btn {
-  font-size: 18px;
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
 }
 
-/* PANTALLAS */
-.screen {
-  display: none;
-}
-.active {
-  display: block;
-}
+/* SCREEN */
+.screen { display: none; }
+.active { display: block; }
 
-/* INPUT */
-input {
-  width: 100%;
-  height: 40px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  padding: 5px;
-}
-
-  .popup {
+/* POPUP */
+.popup {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top:0;
+  width:100%;
+  height:100%;
   background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
 }
 
 .popup-content {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  text-align: center;
-}
-
-.popup-buttons {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-around;
-}
-  
-.icon-close {
-  width: 34px;
-  height: 34px;
-
-  border-radius: 50%;
-  background: rgba(0,0,0,0.05);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 16px;
-  font-weight: bold;
-  color: #555;
-
-  cursor: pointer;
-
-  margin-top: 10px; /* ✅ separación vertical */
-
-  backdrop-filter: blur(6px);
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="app">
 
-<!-- ================= PANTALLA PRINCIPAL ================= -->
+<!-- PRINCIPAL -->
 <div id="screen1" class="screen active">
 
-<h2 class="titulo">Inventario de Salas</h2>
+<h2 class="titulo">Inventario</h2>
 
 <label>Sitio</label>
 <select id="sitio"></select>
@@ -189,66 +129,54 @@ input {
 <label>Rack</label>
 <select id="rack"></select>
 
-<h3>Equipos Encontrados: <span id="count">0</span></h3>
+<h3>Total: <span id="count">0</span></h3>
 
 <div id="results"></div>
 
-<button class="btn" onclick="goNuevo()">➕ Add Equipment</button>
+<button class="btn" onclick="goNuevo()">Nuevo</button>
 
 </div>
 
-<!-- ================= DETALLE ================= -->
+<!-- DETALLE -->
 <div id="detalle" class="screen">
 
 <div class="header">
-  <h2>Datos del Equipo</h2>
-  <button class="btn" style="width:auto;padding:10px;" onclick="editar()">Editar</button>
+  <h2>Detalle</h2>
+  <div class="header-actions">
+    <button class="btn" onclick="editar()">Editar</button>
+    <span class="icon-close" onclick="confirmarVolver()">✕</span>
+  </div>
 </div>
 
 <div id="detalleContent"></div>
-    
-  <div class="header-actions">
-    <button class="btn" onclick="editar()">Editar</button>
-    <span class="icon-close" onclick="confirmarVolver()">✕</span>
-  </div>
+
 </div>
 
-<!-- ================= NUEVO ================= -->
+<!-- NUEVO -->
 <div id="nuevo" class="screen">
 
 <div class="header">
-  <h2>Equipo por Cargar</h2>
-  
-  <div class="header-actions">
-    <button class="btn" onclick="editar()">Editar</button>
-    <span class="icon-close" onclick="confirmarVolver()">✕</span>
-  </div>
+  <h2>Nuevo</h2>
+  <span class="icon-close" onclick="confirmarVolver()">✕</span>
 </div>
 
-<label>Product Name</label>
-<input id="new_producto">
-
-<label>Serial</label>
-<input id="new_serial">
-
-<label>Status</label>
-<input id="new_status">
+<input id="new_producto" placeholder="Producto">
+<input id="new_serial" placeholder="Serial">
+<input id="new_status" placeholder="Status">
 
 <button class="btn" onclick="guardarNuevo()">Guardar</button>
 
 </div>
 
-<!-- ✅ POPUP GLOBAL -->
+<!-- POPUP -->
 <div id="popupConfirm" class="popup">
   <div class="popup-content">
-    <p>¿Confirmar regresar?</p>
-    <div class="popup-buttons">
-      <button onclick="aceptarVolver()">Sí</button>
-      <button onclick="cerrarPopup()">No</button>
-    </div>
+    <p>¿Salir?</p>
+    <button onclick="aceptarVolver()">Si</button>
+    <button onclick="cerrarPopup()">No</button>
   </div>
 </div>
-  
+
 </div>
 
 <script src="app.js"></script>
