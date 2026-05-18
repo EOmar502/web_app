@@ -1,52 +1,22 @@
-// ================= DATOS SIMULADOS =================
+// ================= DATA =================
 
-const Cat_SITIO = [
-  { SITIO: "MTY" },
-  { SITIO: "CDMX" }
-];
+const Cat_SITIO = [{ SITIO: "MTY" }, { SITIO: "CDMX" }];
 
 const Cat_SALA = [
   { SITIO: "MTY", SALA: "DC1" },
-  { SITIO: "MTY", SALA: "DC2" },
-  { SITIO: "CDMX", SALA: "DC3" }
+  { SITIO: "MTY", SALA: "DC2" }
 ];
 
 const Cat_FILA = [
-  { SITIO: "MTY", SALA: "DC1", FILA: "F1" },
-  { SITIO: "MTY", SALA: "DC1", FILA: "F2" }
+  { SITIO: "MTY", SALA: "DC1", FILA: "F1" }
 ];
 
 const Cat_RACK = [
-  { SALA: "DC1", FILA: "F1", RACK: "R01" },
-  { SALA: "DC1", FILA: "F1", RACK: "R02" }
+  { SALA: "DC1", FILA: "F1", RACK: "R01" }
 ];
 
-let Tablas_Datos = [
-  {
-    SITIO: "MTY",
-    SALA: "DC1",
-    FILA: "F1",
-    RACK: "R01",
-    PRODUCT_NAME: "C9300",
-    TYPE: "SWITCH",
-    SERIAL_NUMBER: "SNt245",
-    STATUS: "Active"
-  },
-  {
-    SITIO: "MTY",
-    SALA: "DC1",
-    FILA: "F1",
-    RACK: "R01",
-    PRODUCT_NAME: "R740",
-    TYPE: "SERVER",
-    SERIAL_NUMBER: "SH6790",
-    STATUS: "Active"
-  }
-];
-
-// ================= VARIABLES =================
-
-let selectedItem = null;
+// ✅ LOCAL STORAGE
+let Tablas_Datos = JSON.parse(localStorage.getItem("inventario")) || [];
 
 // ================= ELEMENTOS =================
 
@@ -55,113 +25,111 @@ const sala = document.getElementById("sala");
 const fila = document.getElementById("fila");
 const rack = document.getElementById("rack");
 
-// ================= NAVEGACIÓN =================
+let selectedItem = null;
+
+// ================= INIT =================
+
+function init() {
+  loadSitios();
+
+  sala.innerHTML = "<option value=''>Seleccione</option>";
+  fila.innerHTML = "<option value=''>Seleccione</option>";
+  rack.innerHTML = "<option value=''>Seleccione</option>";
+}
+
+init();
+
+// ================= NAVEGACION =================
 
 function showScreen(id) {
   document.querySelectorAll(".screen")
-    .forEach(x => x.classList.remove("active"));
+    .forEach(s => s.classList.remove("active"));
 
   document.getElementById(id).classList.add("active");
-}
-
-function volver() {
-  showScreen("screen1");
 }
 
 function goNuevo() {
   showScreen("nuevo");
 }
 
-// ================= LOAD SITIOS =================
+function volver() {
+  showScreen("screen1");
+}
+
+// ================= POPUP =================
+
+function confirmarVolver() {
+  popupConfirm.style.display = "flex";
+}
+
+function cerrarPopup() {
+  popupConfirm.style.display = "none";
+}
+
+function aceptarVolver() {
+  cerrarPopup();
+  volver();
+}
+
+// ================= LOAD =================
 
 function loadSitios() {
   sitio.innerHTML = "<option value=''>Seleccione</option>";
 
   Cat_SITIO.forEach(x => {
-    sitio.innerHTML += `<option value="${x.SITIO}">${x.SITIO}</option>`;
+    sitio.innerHTML += `<option>${x.SITIO}</option>`;
   });
+}
+
+// ================= RESET =================
+
+function resetResultados() {
+  count.innerText = 0;
+  results.innerHTML = "";
 }
 
 // ================= FILTROS =================
 
-function resetResultados() {
-  document.getElementById("count").innerText = 0;
-  document.getElementById("results").innerHTML = "";
-}
+sitio.onchange = () => {
+  resetResultados();
 
-sitio.addEventListener("change", () => {
-  
-  resetResultados(); // ✅ limpiar resultados
-  
-  sala.innerHTML = "<option value=''>Seleccione</option>";
-  fila.innerHTML = "<option value=''>Seleccione</option>";
-  rack.innerHTML = "<option value=''>Seleccione</option>";
+  sala.innerHTML = "<option>Seleccione</option>";
+  fila.innerHTML = "<option>Seleccione</option>";
+  rack.innerHTML = "<option>Seleccione</option>";
 
-  if (!sitio.value) return;
-  
-  const filtered = Cat_SALA.filter(x => x.SITIO === sitio.value);
+  Cat_SALA
+    .filter(x => x.SITIO === sitio.value)
+    .forEach(x => sala.innerHTML += `<option>${x.SALA}</option>`);
+};
 
-  filtered.forEach(x => {
-    sala.innerHTML += `<option value="${x.SALA}">${x.SALA}</option>`;
-  });
+sala.onchange = () => {
+  resetResultados();
 
-});
+  fila.innerHTML = "<option>Seleccione</option>";
+  rack.innerHTML = "<option>Seleccione</option>";
 
-sala.addEventListener("change", () => {
+  Cat_FILA
+    .filter(x => x.SALA === sala.value)
+    .forEach(x => fila.innerHTML += `<option>${x.FILA}</option>`);
+};
 
-  resetResultados(); // ✅ limpiar
+fila.onchange = () => {
+  resetResultados();
 
-  fila.innerHTML = "<option value=''>Seleccione</option>";
-  rack.innerHTML = "<option value=''>Seleccione</option>";
+  rack.innerHTML = "<option>Seleccione</option>";
 
-  if (!sala.value) return;
-  
-  const filtered = Cat_FILA.filter(
-    x => x.SITIO === sitio.value && x.SALA === sala.value
-  );
+  Cat_RACK
+    .filter(x => x.FILA === fila.value)
+    .forEach(x => rack.innerHTML += `<option>${x.RACK}</option>`);
+};
 
-  filtered.forEach(x => {
-    fila.innerHTML += `<option value="${x.FILA}">${x.FILA}</option>`;
-  });
+rack.onchange = loadEquipos;
 
-});
-
-fila.addEventListener("change", () => {
-
-  resetResultados(); // ✅ limpiar
-
-  rack.innerHTML = "<option value=''>Seleccione</option>";
-
-  if (!fila.value) return;
-  
-  const filtered = Cat_RACK.filter(
-    x => x.SALA === sala.value && x.FILA === fila.value
-  );
-
-  filtered.forEach(x => {
-    rack.innerHTML += `<option value="${x.RACK}">${x.RACK}</option>`;
-  });
-
-});
-
-rack.addEventListener("change", () => {
-
-  if (!rack.value) {
-    resetResultados();
-    return;
-  }
-
-  loadEquipos(); // ✅ solo carga cuando ya hay selección final válida
-});
-
-// ================= GALLERY =================
+// ================= EQUIPOS =================
 
 function loadEquipos() {
 
-  if (!sitio.value || !sala.value || !fila.value || !rack.value) {
-    resetResultados();
-    return;
-  }
+  if (!rack.value) return resetResultados();
 
   const filtered = Tablas_Datos.filter(x =>
     x.SITIO === sitio.value &&
@@ -170,53 +138,37 @@ function loadEquipos() {
     x.RACK === rack.value
   );
 
-  document.getElementById("count").innerText = filtered.length;
+  count.innerText = filtered.length;
 
-  const results = document.getElementById("results");
-  results.innerHTML = "";
+  if (filtered.length === 0) {
+    results.innerHTML = "<p>No hay datos</p>";
+    return;
+  }
 
-  filtered.forEach((item, i) => {
+  let html = "";
 
-    results.innerHTML += `
-      <div class="card" onclick="verDetalle(${i})">
-        
-        <div class="card-title">${item.PRODUCT_NAME}</div>
-
-        <div class="card-row">
-          <span>Type: ${item.TYPE}</span>
-          <span>Serial: ${item.SERIAL_NUMBER}</span>
-        </div>
-
-        <div class="card-row">
-          <span>Status:</span>
-          <span>${item.STATUS}</span>
-        </div>
-
+  filtered.forEach(item => {
+    html += `
+      <div class="card" onclick="verDetalle('${item.SERIAL_NUMBER}')">
+        ${item.PRODUCT_NAME} - ${item.SERIAL_NUMBER}
       </div>
     `;
   });
+
+  results.innerHTML = html;
 }
 
 // ================= DETALLE =================
 
-function verDetalle(index) {
+function verDetalle(serial) {
+  const item = Tablas_Datos.find(x => x.SERIAL_NUMBER === serial);
 
-  selectedItem = index;
-  const item = Tablas_Datos[index];
+  selectedItem = Tablas_Datos.indexOf(item);
 
-  document.getElementById("detalleContent").innerHTML = `
-
-    <p><b>CLASS:</b> N/A</p>
-    <p><b>TECHNOLOGY:</b> N/A</p>
-    <p><b>TYPE:</b> ${item.TYPE}</p>
-    <p><b>SUPPLIER:</b> N/A</p>
-    <p><b>PRODUCT_NAME:</b> ${item.PRODUCT_NAME}</p>
-    <p><b>Sala:</b> ${item.SALA}</p>
-    <p><b>Fila:</b> ${item.FILA}</p>
-    <p><b>Rack:</b> ${item.RACK}</p>
-    <p><b>Serial:</b> ${item.SERIAL_NUMBER}</p>
-    <p><b>Status:</b> ${item.STATUS}</p>
-
+  detalleContent.innerHTML = `
+    <p>${item.PRODUCT_NAME}</p>
+    <p>${item.SERIAL_NUMBER}</p>
+    <p>${item.STATUS}</p>
   `;
 
   showScreen("detalle");
@@ -225,38 +177,21 @@ function verDetalle(index) {
 // ================= EDITAR =================
 
 function editar() {
-
   const item = Tablas_Datos[selectedItem];
 
-  document.getElementById("detalleContent").innerHTML = `
-
-    <label>Producto</label>
-    <input id="edit_producto" value="${item.PRODUCT_NAME}">
-
-    <label>Serial</label>
-    <input id="edit_serial" value="${item.SERIAL_NUMBER}">
-
-    <label>Status</label>
-    <input id="edit_status" value="${item.STATUS}">
-
-    <button class="btn" onclick="guardarEdicion()">Guardar</button>
-
+  detalleContent.innerHTML = `
+    <input id="edit_p" value="${item.PRODUCT_NAME}">
+    <input id="edit_s" value="${item.SERIAL_NUMBER}">
+    <button onclick="guardarEdicion()">Guardar</button>
   `;
 }
 
 function guardarEdicion() {
+  Tablas_Datos[selectedItem].PRODUCT_NAME = edit_p.value;
 
-  Tablas_Datos[selectedItem].PRODUCT_NAME =
-    document.getElementById("edit_producto").value;
+  guardarStorage();
 
-  Tablas_Datos[selectedItem].SERIAL_NUMBER =
-    document.getElementById("edit_serial").value;
-
-  Tablas_Datos[selectedItem].STATUS =
-    document.getElementById("edit_status").value;
-
-  alert("✅ Información actualizada");
-
+  alert("Actualizado");
   volver();
 }
 
@@ -264,39 +199,37 @@ function guardarEdicion() {
 
 function guardarNuevo() {
 
+  if (!new_producto.value || !new_serial.value) {
+    alert("Campos requeridos");
+    return;
+  }
+
   const nuevo = {
     SITIO: sitio.value,
     SALA: sala.value,
     FILA: fila.value,
     RACK: rack.value,
-    PRODUCT_NAME: document.getElementById("new_producto").value,
-    SERIAL_NUMBER: document.getElementById("new_serial").value,
-    STATUS: document.getElementById("new_status").value,
-    TYPE: "N/A"
+    PRODUCT_NAME: new_producto.value,
+    SERIAL_NUMBER: new_serial.value,
+    STATUS: new_status.value
   };
 
   Tablas_Datos.push(nuevo);
 
-  alert("✅ Equipo agregado");
+  guardarStorage();
 
-  showScreen("screen1");
-}
-// ================= VOLVER BOTONES =================
+  // limpiar
+  new_producto.value = "";
+  new_serial.value = "";
+  new_status.value = "";
 
-function confirmarVolver() {
-  document.getElementById("popupConfirm").style.display = "flex";
-}
-
-function cerrarPopup() {
-  document.getElementById("popupConfirm").style.display = "none";
-}
-
-function aceptarVolver() {
-  cerrarPopup();
+  alert("Guardado");
   volver();
 }
 
+// ================= STORAGE =================
 
-// ================= INIT =================
+function guardarStorage() {
+  localStorage.setItem("inventario", JSON.stringify(Tablas_Datos));
+}
 
-loadSitios();
