@@ -86,9 +86,9 @@ function loadSitios() {
 
 sitio.addEventListener("change", () => {
 
-  sala.innerHTML = "";
-  fila.innerHTML = "";
-  rack.innerHTML = "";
+  sala.innerHTML = "<option value=''>Seleccione</option>";
+  fila.innerHTML = "<option value=''>Seleccione</option>";
+  rack.innerHTML = "<option value=''>Seleccione</option>";
 
   const filtered = Cat_SALA.filter(x => x.SITIO === sitio.value);
 
@@ -100,8 +100,10 @@ sitio.addEventListener("change", () => {
 
 sala.addEventListener("change", () => {
 
-  fila.innerHTML = "";
-  rack.innerHTML = "";
+  if (!sala.value) return;
+  
+  fila.innerHTML = "<option value=''>Seleccione</option>";
+  rack.innerHTML = "<option value=''>Seleccione</option>";
 
   const filtered = Cat_FILA.filter(
     x => x.SITIO === sitio.value && x.SALA === sala.value
@@ -115,7 +117,7 @@ sala.addEventListener("change", () => {
 
 fila.addEventListener("change", () => {
 
-  rack.innerHTML = "";
+  rack.innerHTML = "<option value=''>Seleccione</option>";
 
   const filtered = Cat_RACK.filter(
     x => x.SALA === sala.value && x.FILA === fila.value
