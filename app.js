@@ -291,6 +291,12 @@ function cerrarPopup() {
   document.getElementById("popupConfirm").style.display = "none";
 }
 
+function aceptarVolver() {
+  cerrarPopup();
+  volver();
+}
+
+
 // ================= INIT =================
 
 loadSitios();
