@@ -281,6 +281,15 @@ function guardarNuevo() {
 
   showScreen("screen1");
 }
+// ================= VOLVER BOTONES =================
+
+function confirmarVolver() {
+  document.getElementById("popupConfirm").style.display = "flex";
+}
+
+function cerrarPopup() {
+  document.getElementById("popupConfirm").style.display = "none";
+}
 
 // ================= INIT =================
 
